@@ -1,5 +1,6 @@
 import sys
 
+
 def parse_file(filename: str):
     portfolio_dict = {}
     with open(filename, "r") as f:
@@ -12,9 +13,11 @@ def parse_file(filename: str):
 
     return portfolio_dict
 
+
 def portfolio_cost(filename: str) -> float:
     portfolio_dict = parse_file(filename)
     return sum([count * price for count, price in portfolio_dict.values()])
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

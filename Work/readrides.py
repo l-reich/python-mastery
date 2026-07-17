@@ -80,15 +80,19 @@ def read_rides_as_cls(filename):
             records.append(record)
     return records
 
+
 Record = namedtuple("Record", ["route", "date", "daytype", "rides"])
 
+
 class Row:
-    __slots__ = ['route', 'date', 'daytype', 'rides']
+    __slots__ = ["route", "date", "daytype", "rides"]
+
     def __init__(self, route, date, daytype, rides):
         self.route = route
         self.date = date
         self.daytype = daytype
         self.rides = rides
+
 
 def get_func_for_mode(mode: str):
     match mode:
