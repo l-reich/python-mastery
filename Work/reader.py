@@ -8,7 +8,9 @@ class DataCollection(collections.abc.Sequence):
         self.col_names = column_names
 
     def __getitem__(self, index):
-        return {col_key: self.col_dict[col_key][index] for col_key in self.col_dict.keys()}
+        return {
+            col_key: self.col_dict[col_key][index] for col_key in self.col_dict.keys()
+        }
 
     def __len__(self):
         example_key = self.col_names[0]
@@ -43,3 +45,16 @@ def read_csv_as_columns(fn: str, types: list) -> DataCollection:
             )
 
     return data_coll
+
+
+def read_csv_as_instances(filename, cls):
+    """
+    Read a CSV file into a list of instances
+    """
+    records = []
+    with open(filename) as f:
+        rows = csv.reader(f)
+        headers = next(rows)
+        for row in rows:
+            records.append(cls.from_row(row))
+    return records
