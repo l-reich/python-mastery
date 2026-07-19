@@ -1,15 +1,57 @@
-def print_table(obj_list: list[object], attr_names: list[str]) -> None:
-    longest_name_len = max(len(a_name) for a_name in attr_names) + 4
-    dashes = ["-" * longest_name_len for i in range(len(attr_names))]
-    long_in_str = str(longest_name_len)
-    formatting_str = (("%" + long_in_str + "s ") * len(attr_names))[:-1]
+class TableFormatter:
+    def headings(self, headers):
+        raise NotImplementedError()
 
-    print(formatting_str % tuple(attr_names))
-    print(*dashes)
+    def row(self, rowdata):
+        raise NotImplementedError()
 
-    for o in obj_list:
-        values = tuple(getattr(o, attr) for attr in attr_names)
-        print(formatting_str % values)
+
+class TextTableFormatter(TableFormatter):
+    def headings(self, headers):
+        print(" ".join("%10s" % h for h in headers))
+        print(("-" * 10 + " ") * len(headers))
+
+    def row(self, rowdata):
+        print(" ".join("%10s" % d for d in rowdata))
+
+
+class CSVTableFormatter(TableFormatter):
+    def headings(self, headers):
+        print(",".join(h for h in headers))
+
+    def row(self, rowdata):
+        print(",".join(str(d) for d in rowdata))
+
+
+class HTMLTableFormatter(TableFormatter):
+    def headings(self, headers):
+        print("<tr> " + (" ".join("<th>" + h + "<\\th>" for h in headers)) + " <\\tr>")
+
+    def row(self, rowdata):
+        print(
+            "<tr> "
+            + (" ".join("<th>" + str(d) + "<\\td>" for d in rowdata))
+            + " <\\tr>"
+        )
+
+
+def create_formatter(format: str) -> TableFormatter:
+    match format:
+        case "text":
+            return TextTableFormatter()
+        case "csv":
+            return CSVTableFormatter()
+        case "html":
+            return HTMLTableFormatter()
+
+
+def print_table(
+    obj_list: list[object], attr_names: list[str], formatter: TableFormatter
+) -> None:
+    formatter.headings(attr_names)
+    for record in obj_list:
+        rowdata = [getattr(record, fieldname) for fieldname in attr_names]
+        formatter.row(rowdata)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ class Stock:
         self.name = name
         self.shares = shares
         self.price = price
-    
+
     @property
     def shares(self):
         return self._shares
