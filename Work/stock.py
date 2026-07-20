@@ -30,7 +30,7 @@ class Stock:
     @price.setter
     def price(self, val):
         specified_type = Stock._types[2]
-        if not isinstance(val, specified_type):
+        if not (isinstance(val, specified_type) or isinstance(val, int)):
             raise ValueError
         if val < 0:
             raise ValueError
@@ -43,10 +43,19 @@ class Stock:
     def sell(self, amt):
         self.shares -= amt
 
+    def __repr__(self):
+        return "Stock('%s', %s, %s)" % (self.name, self.shares, self.price)
+
     @classmethod
     def from_row(cls, row: list[str]):
         vals = (func(val) for func, val in zip(cls._types, row))
         return cls(*vals)
+
+    def __eq__(self, other):
+        return isinstance(other, Stock) and (
+            (self.name, self.shares, self.price)
+            == (other.name, other.shares, other.price)
+        )
 
 
 def print_portfolio(portfolio: list[Stock]) -> None:
