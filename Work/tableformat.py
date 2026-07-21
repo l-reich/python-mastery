@@ -40,14 +40,50 @@ class HTMLTableFormatter(TableFormatter):
         )
 
 
-def create_formatter(format: str) -> TableFormatter:
+class ColumnFormatMixin:
+    formats = []
+
+    def row(self, rowdata):
+        rowdata = [(fmt % d) for fmt, d in zip(self.formats, rowdata)]
+        super().row(rowdata)
+
+
+class UpperHeadersMixin:
+    def headings(self, headers):
+        super().headings([h.upper() for h in headers])
+
+
+def create_formatter(
+    format: str, column_formats: list = None, upper_headers=False
+) -> TableFormatter:
     match format:
         case "text":
-            return TextTableFormatter()
+            format_class = TextTableFormatter
         case "csv":
-            return CSVTableFormatter()
+            format_class = CSVTableFormatter
         case "html":
-            return HTMLTableFormatter()
+            format_class = HTMLTableFormatter
+
+    if column_formats:
+        if upper_headers:
+
+            class ReturnClass(UpperHeadersMixin, ColumnFormatMixin, format_class):
+                formats = column_formats
+        else:
+
+            class ReturnClass(ColumnFormatMixin, format_class):
+                formats = column_formats
+    else:
+        if upper_headers:
+
+            class ReturnClass(UpperHeadersMixin, format_class):
+                pass
+        else:
+
+            class ReturnClass(format_class):
+                pass
+
+    return ReturnClass()
 
 
 def print_table(
