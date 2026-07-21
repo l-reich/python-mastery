@@ -1,7 +1,12 @@
-class TableFormatter:
+from abc import ABC, abstractmethod
+
+
+class TableFormatter(ABC):
+    @abstractmethod
     def headings(self, headers):
         raise NotImplementedError()
 
+    @abstractmethod
     def row(self, rowdata):
         raise NotImplementedError()
 
@@ -48,6 +53,9 @@ def create_formatter(format: str) -> TableFormatter:
 def print_table(
     obj_list: list[object], attr_names: list[str], formatter: TableFormatter
 ) -> None:
+    if not isinstance(formatter, TableFormatter):
+        raise TypeError("Expected a TableFormatter")
+
     formatter.headings(attr_names)
     for record in obj_list:
         rowdata = [getattr(record, fieldname) for fieldname in attr_names]

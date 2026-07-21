@@ -1,5 +1,6 @@
 import csv
 import collections
+from abc import ABC, abstractmethod
 
 
 class DataCollection(collections.abc.Sequence):
@@ -21,17 +22,40 @@ class DataCollection(collections.abc.Sequence):
             self.col_dict[k].append(d[k])
 
 
-def read_csv_as_dicts(fn: str, types: list) -> list[dict]:
-    res_list = []
-    with open(fn, "r") as csvfile:
-        reader = csv.reader(csvfile)
-        headers = next(reader)
-        for row in reader:
-            res_list.append(
-                {col: func(val) for col, func, val in zip(headers, types, row)}
-            )
+class CSVParser(ABC):
+    def parse(self, filename):
+        records = []
+        with open(filename) as f:
+            rows = csv.reader(f)
+            headers = next(rows)
+            for row in rows:
+                record = self.make_record(headers, row)
+                records.append(record)
+        return records
 
-    return res_list
+    @abstractmethod
+    def make_record(self, headers, row):
+        pass
+
+
+class DictCSVParser(CSVParser):
+    def __init__(self, types):
+        self.types = types
+
+    def make_record(self, headers, row):
+        return {name: func(val) for name, func, val in zip(headers, self.types, row)}
+
+
+class InstanceCSVParser(CSVParser):
+    def __init__(self, cls):
+        self.cls = cls
+
+    def make_record(self, headers, row):
+        return self.cls.from_row(row)
+
+
+def read_csv_as_dicts(fn: str, types: list) -> list[dict]:
+    return DictCSVParser(types).parse(fn)
 
 
 def read_csv_as_columns(fn: str, types: list) -> DataCollection:
@@ -51,10 +75,4 @@ def read_csv_as_instances(filename, cls):
     """
     Read a CSV file into a list of instances
     """
-    records = []
-    with open(filename) as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-        for row in rows:
-            records.append(cls.from_row(row))
-    return records
+    return InstanceCSVParser(cls).parse(filename)
