@@ -1,12 +1,10 @@
-import csv
-
-from validate import PositiveInteger, Float
+from validate import PositiveInteger, PositiveFloat, String
 
 
 class Stock:
-    '''
-    _types = (str, int, float)
-    __slots__ = ("name", "_shares", "_price")
+    name = String()
+    shares = PositiveInteger()
+    price = PositiveFloat()
 
     def __init__(self, name, shares, price):
         self.name = name
@@ -19,12 +17,7 @@ class Stock:
 
     @shares.setter
     def shares(self, val):
-        specified_type = Stock._types[1]
-        if not isinstance(val, specified_type):
-            raise ValueError
-        if val < 0:
-            raise ValueError
-        self._shares = val
+        self._shares = PositiveInteger.check(val)
 
     @property
     def price(self):
@@ -32,12 +25,7 @@ class Stock:
 
     @price.setter
     def price(self, val):
-        specified_type = Stock._types[2]
-        if not (isinstance(val, specified_type) or isinstance(val, int)):
-            raise ValueError
-        if val < 0:
-            raise ValueError
-        self._price = val
+        self._price = PositiveFloat.check(val)
 
     @property
     def cost(self):
@@ -49,63 +37,12 @@ class Stock:
     def __repr__(self):
         return "Stock('%s', %s, %s)" % (self.name, self.shares, self.price)
 
+    """
     @classmethod
     def from_row(cls, row: list[str]):
         vals = (func(val) for func, val in zip(cls._types, row))
         return cls(*vals)
-
-    def __eq__(self, other):
-        return isinstance(other, Stock) and (
-            (self.name, self.shares, self.price)
-            == (other.name, other.shares, other.price)
-        )
-
-'''
-
-    _types = (str, int, float)
-    __slots__ = ("name", "_shares", "_price")
-
-    def __init__(self, name, shares, price):
-        self.name = name
-        self.shares = shares
-        self.price = price
-
-    @property
-    def shares(self):
-        return self._shares
-
-    @shares.setter
-    def shares(self, val):
-        try:
-            self._shares = PositiveInteger(val)
-        except:
-            print("NOOOO not PositiveInteger")
-
-    @property
-    def price(self):
-        return self._price
-
-    @price.setter
-    def price(self, val):
-        try:
-            self._price = Float(val)
-        except:
-            print("NOOOO not Float")
-
-    @property
-    def cost(self):
-        return self.shares * self.price
-
-    def sell(self, amt):
-        self.shares -= amt
-
-    def __repr__(self):
-        return "Stock('%s', %s, %s)" % (self.name, self.shares, self.price)
-
-    @classmethod
-    def from_row(cls, row: list[str]):
-        vals = (func(val) for func, val in zip(cls._types, row))
-        return cls(*vals)
+    """
 
     def __eq__(self, other):
         return isinstance(other, Stock) and (
