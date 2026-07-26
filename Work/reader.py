@@ -54,8 +54,12 @@ class InstanceCSVParser(CSVParser):
         return self.cls.from_row(row)
 
 
-def read_csv_as_dicts(fn: str, types: list) -> list[dict]:
-    return DictCSVParser(types).parse(fn)
+def read_csv_as_dicts(filename: str, types: list) -> list[dict]:
+    """
+    Read CSV data into a list of dictionaries with optional type conversion
+    """
+    with open(filename) as file:
+        return csv_as_dicts(file, types)
 
 
 def read_csv_as_columns(fn: str, types: list) -> DataCollection:
@@ -73,6 +77,28 @@ def read_csv_as_columns(fn: str, types: list) -> DataCollection:
 
 def read_csv_as_instances(filename, cls):
     """
-    Read a CSV file into a list of instances
+    Read CSV data into a list of instances
     """
-    return InstanceCSVParser(cls).parse(filename)
+    with open(filename) as file:
+        return csv_as_instances(file, cls)
+
+def csv_as_dicts(file, types: list):
+    records = []
+    rows = csv.reader(file)
+    headers = next(rows)
+    for row in rows:
+        record = {name: func(val) for name, func, val in zip(headers, types, row)}
+        records.append(record)
+    return records
+
+def csv_as_instances(file, cls):
+    """
+    Read CSV data into a list of instances
+    """
+    records = []
+    rows = csv.reader(file)
+    _ = next(rows)
+    for row in rows:
+        record = cls.from_row(row)
+        records.append(record)
+    return records

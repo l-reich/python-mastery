@@ -5,6 +5,8 @@ class Stock:
     name = String()
     shares = PositiveInteger()
     price = PositiveFloat()
+    #_types = [String, PositiveInteger, PositiveFloat]
+    _types = [str, int, float]
 
     def __init__(self, name, shares, price):
         self.name = name
@@ -37,12 +39,10 @@ class Stock:
     def __repr__(self):
         return "Stock('%s', %s, %s)" % (self.name, self.shares, self.price)
 
-    """
     @classmethod
     def from_row(cls, row: list[str]):
         vals = (func(val) for func, val in zip(cls._types, row))
         return cls(*vals)
-    """
 
     def __eq__(self, other):
         return isinstance(other, Stock) and (
