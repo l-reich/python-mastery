@@ -5,7 +5,7 @@ class Stock:
     name = String()
     shares = PositiveInteger()
     price = PositiveFloat()
-    #_types = [String, PositiveInteger, PositiveFloat]
+    # _types = [String, PositiveInteger, PositiveFloat]
     _types = [str, int, float]
 
     def __init__(self, name, shares, price):
