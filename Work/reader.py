@@ -1,13 +1,24 @@
 # reader.py
 
 import csv
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def convert_csv(lines, converter, *, headers=None):
+    result_list = []
     rows = csv.reader(lines)
     if headers is None:
         headers = next(rows)
-    return list(map(lambda row: converter(headers, row), rows))
+    for line_idx, line in enumerate(rows):
+        try:
+            result_list.append(converter(headers, line))
+        except ValueError as e:
+            log.warning("Bad row: %s", line)
+            log.debug("Reason : %s", e)
+
+    return result_list
 
 
 def csv_as_dicts(lines, types, *, headers=None):
