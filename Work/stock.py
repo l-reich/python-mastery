@@ -16,4 +16,5 @@ class Stock(Structure):
     def sell(self, nshares):
         self.shares -= nshares
 
+
 Stock.create_init()

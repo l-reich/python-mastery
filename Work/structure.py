@@ -14,7 +14,7 @@ class Structure:
 
         locs = {}
         exec(code, locs)
-        cls.__init__ = locs['__init__']
+        cls.__init__ = locs["__init__"]
 
     def __repr__(self):
         classname = self.__class__.__name__
