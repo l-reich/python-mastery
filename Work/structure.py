@@ -1,11 +1,17 @@
+import sys
+
+
 class Structure:
     _fields = ()
 
-    def __init__(self, *args):
-        if len(args) != len(self._fields):
-            raise TypeError("Expected %d arguments" % len(self._fields))
-        for name, arg in zip(self._fields, args):
-            setattr(self, name, arg)
+    @staticmethod
+    def _init():
+        locs = sys._getframe(1).f_locals
+        self = locs["self"]
+        for name, val in locs.items():
+            if name == "self":
+                continue
+            setattr(self, name, val)
 
     def __repr__(self):
         classname = self.__class__.__name__
