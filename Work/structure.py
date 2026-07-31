@@ -6,18 +6,15 @@ class Structure:
     _fields = ()
 
     @classmethod
-    def set_fields(cls):
-        sig = inspect.signature(cls)
-        cls._fields = tuple((str(s) for s in sig.parameters))
+    def create_init(cls):
+        argstr = ",".join(cls._fields)
+        code = f"def __init__(self, {argstr}):\n"
+        for name in cls._fields:
+            code += f"    self.{name} = {name}\n"
 
-    @staticmethod
-    def _init():
-        locs = sys._getframe(1).f_locals
-        self = locs["self"]
-        for name, val in locs.items():
-            if name == "self":
-                continue
-            setattr(self, name, val)
+        locs = {}
+        exec(code, locs)
+        cls.__init__ = locs['__init__']
 
     def __repr__(self):
         classname = self.__class__.__name__
