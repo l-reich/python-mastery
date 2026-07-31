@@ -1,8 +1,14 @@
 import sys
+import inspect
 
 
 class Structure:
     _fields = ()
+
+    @classmethod
+    def set_fields(cls):
+        sig = inspect.signature(cls)
+        cls._fields = tuple((str(s) for s in sig.parameters))
 
     @staticmethod
     def _init():
@@ -28,11 +34,3 @@ class Structure:
             raise AttributeError("No attribute %s" % attr_name)
 
         super().__setattr__(attr_name, value)
-
-
-class Stock(Structure):
-    _fields = ("name", "shares", "price")
-
-
-class Date(Structure):
-    _fields = ("year", "month", "day")
