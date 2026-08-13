@@ -4,7 +4,9 @@ from structure import Structure
 
 
 class Stock(Structure):
-    _fields = ("name", "shares", "price")
+    name = String()
+    shares = PositiveInteger()
+    price = PositiveFloat()
 
     @property
     def cost(self):
